@@ -1,6 +1,7 @@
 'use client'
 
 import { Video } from '@/app/page'
+import { downloadFile } from '@/service/downloadData'
 import { useEffect, useState } from 'react'
 
 const HOST = 'http://34.143.206.52'
@@ -13,38 +14,6 @@ export default function Table({ videos }: { videos: Video[] }) {
   // useEffect(() => {
   //   handleLoadList()
   // }, [])
-
-  const downloadFile = async (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | undefined
-  ) => {
-    const fileName = event ? event.currentTarget.id : ''
-
-    const res = await fetch(`${HOST}/videos/download?fileName=${fileName}`, {
-      headers: {
-        Authorization: 'Bearer test-local',
-      },
-    })
-
-    const blob = await res.blob()
-
-    const url = URL.createObjectURL(blob)
-
-    const a = document.createElement('a')
-
-    a.href = url
-
-    a.download = fileName
-
-    const clickHandler = () => {
-      setTimeout(() => {
-        URL.revokeObjectURL(url)
-      }, 150)
-    }
-
-    a.addEventListener('click', clickHandler, false)
-
-    a.click()
-  }
 
   const handleUpload = async () => {
     const formData = new FormData()
@@ -121,8 +90,27 @@ export default function Table({ videos }: { videos: Video[] }) {
                 View
               </button>
               <button
-                id={vid.name}
-                onClick={downloadFile}
+                onClick={async () => {
+                  const blob = await downloadFile(vid.name)
+
+                  const url = URL.createObjectURL(blob)
+
+                  const a = document.createElement('a')
+
+                  a.href = url
+
+                  a.download = vid.name
+
+                  const clickHandler = () => {
+                    setTimeout(() => {
+                      URL.revokeObjectURL(url)
+                    }, 150)
+                  }
+
+                  a.addEventListener('click', clickHandler, false)
+
+                  a.click()
+                }}
                 className="bg-indigo-600 rounded-md p-1"
               >
                 Download
