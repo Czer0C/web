@@ -1,10 +1,9 @@
 'use client'
 
 import { Video } from '@/app/page'
-import { getVideoStream } from '@/service/getVideoStream'
+import { getVideoStream } from '@/actions/getVideoStream'
 import { useEffect, useState } from 'react'
-
-const HOST = 'http://34.143.206.52'
+import nextConfig from '../../next.config'
 
 export default function Table({ videos }: { videos: Video[] }) {
   const [file, setFile] = useState<File>()
@@ -22,7 +21,7 @@ export default function Table({ videos }: { videos: Video[] }) {
 
     formData.append('video', file)
 
-    await fetch(`${HOST}/videos/upload`, {
+    await fetch(`${nextConfig.HOST_STAGING}/videos/upload`, {
       method: 'POST',
       body: formData,
       headers: {

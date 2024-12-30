@@ -1,4 +1,5 @@
 import Table from '@/app/table'
+import nextConfig from '../../next.config'
 // import { useEffect, useState } from 'react'
 
 export default function Home() {
@@ -15,10 +16,6 @@ export default function Home() {
 
 // http://34.143.206.52/videos/download?fileName=Ram-Meme.mp4
 
-const HOST = 'http://34.143.206.52'
-
-const ENDPOINT_LIST = `${HOST}/videos`
-
 export interface Video {
   id: string
   bucket: string
@@ -29,7 +26,7 @@ export interface Video {
 }
 
 async function TableZone() {
-  const data = await fetch(ENDPOINT_LIST)
+  const data = await fetch(nextConfig.HOST_STAGING + '/videos')
 
   const videos = await data.json()
 
