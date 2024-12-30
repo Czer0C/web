@@ -30,13 +30,13 @@ interface Video {
 }
 
 function Table() {
-  const [file, setFile] = useState(null)
+  const [file, setFile] = useState<File>()
 
   const [list, setList] = useState<Video[]>([])
 
   const [loading, setLoading] = useState(false)
 
-  const [preview, setPreview] = useState(null)
+  const [preview, setPreview] = useState<Video>()
 
   const handleLoadList = async () => {
     setLoading(true)
@@ -58,8 +58,10 @@ function Table() {
     handleLoadList()
   }, [])
 
-  const downloadFile = async (event) => {
-    const fileName = event.target.id
+  const downloadFile = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | undefined
+  ) => {
+    const fileName = event ? event.currentTarget.id : ''
 
     const res = await fetch(`${HOST}/videos/download?fileName=${fileName}`, {
       headers: {
@@ -90,6 +92,8 @@ function Table() {
 
   const handleUpload = async () => {
     const formData = new FormData()
+
+    if (!file) return
 
     formData.append('video', file)
 
@@ -135,7 +139,11 @@ function Table() {
           type="file"
           name="file"
           id="file"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={(e) => {
+            if (!e?.target?.files?.[0]) return
+
+            setFile(e.target.files[0])
+          }}
         />
 
         <button onClick={handleUpload} className="bg-amber-600 rounded-md p-1">
@@ -189,7 +197,7 @@ function Table() {
 }
 
 function Preview({ preview }: { preview: Video }) {
-  const [data, setData] = useState(null)
+  const [data, setData] = useState<Blob>()
 
   const [loading, setLoading] = useState(false)
 
@@ -253,7 +261,9 @@ const formatSize = (size: string) => {
 
   if (size === '0') return 'n/a'
 
-  const i = parseInt(Math.floor(Math.log(size) / Math.log(1024)))
+  const val = +size
 
-  return `${(size / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
+  const i = Math.floor(Math.log(val) / Math.log(1024))
+
+  return `${(val / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
 }
