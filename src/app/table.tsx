@@ -1,7 +1,7 @@
 'use client'
 
 import { Video } from '@/app/page'
-import { downloadFile } from '@/service/downloadData'
+import { getVideoStream } from '@/service/getVideoStream'
 import { useEffect, useState } from 'react'
 
 const HOST = 'http://34.143.206.52'
@@ -91,7 +91,7 @@ export default function Table({ videos }: { videos: Video[] }) {
               </button>
               <button
                 onClick={async () => {
-                  const blob = await downloadFile(vid.name)
+                  const blob = await getVideoStream(vid.name)
 
                   const url = URL.createObjectURL(blob)
 
@@ -133,15 +133,7 @@ function Preview({ preview }: { preview: Video }) {
   const fetchData = async () => {
     setLoading(true)
 
-    const res = await fetch(
-      `${HOST}/videos/download?fileName=${preview.name}`,
-      {
-        headers: {
-          Authorization: 'Bearer test-local',
-        },
-      }
-    )
-    const blob = await res.blob()
+    const blob = await getVideoStream(preview.name)
 
     setData(blob)
 
